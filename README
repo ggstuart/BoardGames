@@ -1,0 +1,9 @@
+OK, this is a pretty poor library at the moment, I'm trying to learn to use git and to improve my ruby knowledge.
+
+The project started as a response to this http://rubyquiz.strd6.com/quizzes/193-game-of-life
+I realised that a game of life library would share functionality with lots of games
+So the basic idea is that the BoardGames module defines a load of generic functionality for all board games
+
+To try it out do this
+
+ruby path/to/BoardGames/GameOfLife/test.rb
