@@ -17,8 +17,8 @@ module BoardGames
       UP = 3
       DOWN = 4
       
-      def initialize(head, symbol = '*', head_symbol = 'X', direction = UP)
-        @length = 4
+      def initialize(head, length = 4, symbol = '*', head_symbol = 'X', direction = UP)
+        @length = length
         head.snake = self
         @snake = [head]
         @symbol = symbol
@@ -34,9 +34,7 @@ module BoardGames
         head.food = 0
         @snake = [head, @snake].flatten
         while @snake.length > @length
-#          i = @snake.pop
-#          i.snake = nil
-          @snake.pop.snake = nil
+          @snake.pop.snake = false
         end
       end
 
@@ -100,15 +98,25 @@ module BoardGames
     end
 
     class Session
-      def initialize(x = 25, y = 15)
+      attr :x
+      attr :y
+      def initialize(x = 25, y = 15, snake_count = 15)
         @x = x
         @y = y
+        @snake_count = snake_count
         refresh
+      end
+
+      def [](x, y)
+        @board[x, y]
       end
 
       def refresh
         @board = Board.new(@x,@y)
-        @snake = Snake.new(@board[0, 0])        
+        @snakes = []
+        @snake_count.times do
+          @snakes << Snake.new(@board[0, 0], 10)
+        end
       end
 
       def size
@@ -121,23 +129,32 @@ module BoardGames
         refresh
       end
 
+      def iterate!
+        @snakes.each do |snake|
+          snake.turn if rand(10) >= 5
+          snake.move
+        end
+      end
+
       def iterate
         while true
-          @snake.turn if rand(10) >= 5
-          @snake.move
-          yield @board.to_s
+          @snakes.each do |snake|
+            snake.turn if rand(10) >= 5
+            snake.move
+            yield @board.to_s
+          end
         end
       end
       
-      def run
-        puts @board
-        200.times do
-          sleep 0.2
-          @snake.turn if rand(10) >= 5
-          @snake.move
-          puts @board
-        end
-      end
+#      def run
+#        puts @board
+#        200.times do
+#          sleep 0.2
+#          @snake.turn if rand(10) >= 5
+#          @snake.move
+#          puts @board
+#        end
+#      end
 
       def to_s
         @board.to_s
@@ -177,6 +194,7 @@ module BoardGames
         def initialize(board)
           @board = board
           @food = 0
+          @snake = false
         end
         
         def to_s
@@ -184,7 +202,7 @@ module BoardGames
         end
         
         def occupied?
-          @snake.nil?
+          @snake != false
         end
       end
       
