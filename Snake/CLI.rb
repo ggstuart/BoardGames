@@ -118,6 +118,6 @@ end #module BoardGames
 
 if __FILE__ == $0
   require "#{File.dirname(__FILE__)}/../Base"
-  require "#{File.dirname(__FILE__)}/GameOfLife"
-  BoardGames::GameOfLife::CLI.new.run!
+  require "#{File.dirname(__FILE__)}/Snake"
+  BoardGames::Snake::CLI.new.run!
 end
