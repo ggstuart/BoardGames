@@ -1,5 +1,6 @@
-require '~/Code/Ruby/BoardGames/Base'
-require '~/Code/Ruby/BoardGames/Snake/Snake'
+require "#{File.dirname(__FILE__)}/../Base"
+require "#{File.dirname(__FILE__)}/Snake"
+require "#{File.dirname(__FILE__)}/CLI"
 
-session1 = BoardGames::Snake::Session.new(40, 20)
-session1.run
+session = BoardGames::Snake::CLI.new
+session.run!

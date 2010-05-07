@@ -17,11 +17,12 @@ module BoardGames
       UP = 3
       DOWN = 4
       
-      def initialize(head, symbol, direction = UP)
+      def initialize(head, symbol = '*', head_symbol = 'X', direction = UP)
         @length = 4
         head.snake = self
         @snake = [head]
         @symbol = symbol
+        @head_symbol = head_symbol
         @direction = direction
       end
       
@@ -29,19 +30,22 @@ module BoardGames
       def move
         head = next_head#random#@snake[0].left
         head.snake = self
+        @length += head.food
+        head.food = 0
         @snake = [head, @snake].flatten
         while @snake.length > @length
-          i = @snake.pop
-          i.snake = nil
+#          i = @snake.pop
+#          i.snake = nil
+          @snake.pop.snake = nil
         end
       end
-            
+
       def includes?(cell)
         @snake.includes?(cell)
       end
       
-      def to_s
-        @symbol
+      def to_s(cell)
+        cell == head ? @head_symbol : @symbol
       end
       
       def turn
@@ -53,18 +57,22 @@ module BoardGames
       end
       
       private
+
+      def head
+        @snake[0]
+      end
       
       def next_head
-        head = @snake[0]
+        h = @snake[0]
         case @direction
         when LEFT
-          head.left
+          h.left
         when RIGHT
-          head.right
+          h.right
         when UP
-          head.up
+          h.up
         when DOWN
-          head.down
+          h.down
         end
       end
             
@@ -82,8 +90,8 @@ module BoardGames
       end
          
       def options
-        head = @snake[0]
-        [head.left, head.up, head.right, head.down]
+        h = @snake[0]
+        [h.left, h.up, h.right, h.down]
       end
       
       def random
@@ -92,19 +100,47 @@ module BoardGames
     end
 
     class Session
-      def initialize(x,y)
-        @board = Board.new(x,y)
-        @snake = Snake.new(@board[9,5], 'S')
+      def initialize(x = 25, y = 15)
+        @x = x
+        @y = y
+        refresh
+      end
+
+      def refresh
+        @board = Board.new(@x,@y)
+        @snake = Snake.new(@board[0, 0])        
+      end
+
+      def size
+        @board.size
+      end
+
+      def size=(size)
+        @x = size[0]
+        @y = size[1]
+        refresh
+      end
+
+      def iterate
+        while true
+          @snake.turn if rand(10) >= 5
+          @snake.move
+          yield @board.to_s
+        end
       end
       
       def run
         puts @board
-        100.times do
-          sleep 0.05
-          @snake.turn
+        200.times do
+          sleep 0.2
+          @snake.turn if rand(10) >= 5
           @snake.move
           puts @board
         end
+      end
+
+      def to_s
+        @board.to_s
       end
     end
 
@@ -112,6 +148,22 @@ module BoardGames
       
       def clear
         @data = (0..size).collect{Cell.new(self)}
+        addFood(10)
+      end
+
+      def randomCell
+        self[rand(@x), rand(@y)]
+      end
+
+      def addFood(n)
+        while n > 0
+          if (i = rand(n+1)) > 0
+            i = i<=2 ? i : 2
+            c = randomCell
+            c.food = c.food + i
+            n -= i
+          end
+        end
       end
 
       def to_s
@@ -120,13 +172,15 @@ module BoardGames
       
       class Cell
         include Base::Boardable
+        attr :food, true
         attr :snake, true
         def initialize(board)
           @board = board
+          @food = 0
         end
         
         def to_s
-          @snake.nil? ? '.' : @snake.to_s
+          @snake.nil? ? @food > 0 ? @food.to_s : '.' : @snake.to_s(self)
         end
         
         def occupied?
@@ -135,9 +189,6 @@ module BoardGames
       end
       
     end 
-
-
-
     
   end #of module Snake
 end #of module BoardGames
