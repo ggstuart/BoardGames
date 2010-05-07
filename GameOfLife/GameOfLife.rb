@@ -133,7 +133,10 @@ module BoardGames
 
     #A session manages a board, it provides a simple interface to the world
     class Session
-      def initialize(width = 30, height = 15, chance = 10)
+      attr :width
+      attr :height
+      attr :board
+      def initialize(width = 100, height = 60, chance = 10)
         @width = width
         @height = height
         @chance = chance
@@ -161,16 +164,18 @@ module BoardGames
       end
 
       def refresh
-        puts 'mmm... refreshing'
         @board = Board.new(@width, @height)
         @board.randomise(@chance)
-  #      @arena[2,2].h
+      end
+
+      def iterate!
+        @board.iterate!
       end
 
       def iterate(n)
         while (n -= 1) >= 0
           @board.iterate!
-          yield @board.to_s
+          yield @board
         end
       end
       
