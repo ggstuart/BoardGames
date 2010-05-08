@@ -4,7 +4,7 @@ module BoardGames
       require 'opengl'
       require 'glut'
 
-      def initialize(dot_size = 10.0, x = 100, y = 80)
+      def initialize(dot_size = 4.0, x = 80, y = 60)
         @dot_size = dot_size
         @session = Session.new(x, y)
         @name = "Graeme's \"Conway's Game of life\""
