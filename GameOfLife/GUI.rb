@@ -4,11 +4,11 @@ module BoardGames
       require 'opengl'
       require 'glut'
 
-      def initialize
-        @dot_size = 4.0
-        @session = Session.new(100, 50)
+      def initialize(dot_size = 10.0, x = 100, y = 80)
+        @dot_size = dot_size
+        @session = Session.new(x, y)
         @name = "Graeme's \"Conway's Game of life\""
-
+        
         @display = Proc.new do
           GL.Clear( GL::COLOR_BUFFER_BIT )
           GL.PushMatrix()
