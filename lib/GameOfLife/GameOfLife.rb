@@ -142,10 +142,9 @@ module BoardGames
       attr :width
       attr :height
       attr :board
-      def initialize(width = 60, height = 40, chance = rand(11)+1)
+      def initialize(width = 60, height = 40)
         @width = width
         @height = height
-        @chance = chance
         refresh
       end
 
@@ -165,19 +164,14 @@ module BoardGames
         [@width, @height]
       end
 
-      def chance=(chance)
-        @chance = chance
-        refresh
-      end
-
       def size=(size)
         @width = size[0]
         @height = size[1]
         refresh
       end
 
-      def randomise()
-        @board.randomise(@chance)
+      def randomise(chance)
+        @board.randomise(chance)
       end
 
       def clear
