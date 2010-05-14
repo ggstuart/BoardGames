@@ -6,4 +6,8 @@ So the basic idea is that the BoardGames module defines a load of generic functi
 
 To try it out do this
 
-ruby path/to/BoardGames/GameOfLife/test.rb
+ruby path/to/BoardGames/lib/GameOfLife/CLI.rb
+
+or, if you have opengl ruby bindings installed, try the posh graphical interface
+
+ruby path/to/BoardGames/lib/GameOfLife/GUI.rb
