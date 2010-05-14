@@ -4,9 +4,24 @@ module BoardGames
       require 'opengl'
       require 'glut'
 
-      def initialize(dot_size = 4.0, x = 80, y = 60)
+      def initialize(dot_size = 7.0)
         @dot_size = dot_size
-        @session = Session.new(x, y)
+        @session = Session.new(80, 80)#(120,90)
+        @shapes = ShapeWriter.new
+        @alpha = AlphaWriter.new(@session[25,45])
+
+#        @session.randomise()
+#        5.times { @shapes.spaceShip(@session.randomCell) }
+#        5.times { @shapes.glider(@session.randomCell) }
+#        @shapes.flat(@session[40,30])
+#        @shapes.dieHard(@session[40,30])
+#        @shapes.acorn(@session[40,30])        
+#        @shapes.f_pentomino(@session[40,30])
+        @shapes.gun(@session[30,50])
+#        @shapes.infinite1(@session[40,30])
+#        @shapes.infinite2(@session[40,30])
+#         @alpha.write!("TEXT")
+        
         @name = "Graeme's \"Conway's Game of life\""
         
         @display = Proc.new do
@@ -24,8 +39,8 @@ module BoardGames
         end
 
         @idle = Proc.new do
-          @session.iterate!
           @display.call
+          @session.iterate!
         end
 
       end
@@ -61,5 +76,8 @@ end
 if __FILE__ == $0
   require "#{File.dirname(__FILE__)}/../Base"
   require "#{File.dirname(__FILE__)}/GameOfLife"
+  require "#{File.dirname(__FILE__)}/Writer"
+  require "#{File.dirname(__FILE__)}/ShapeWriter"
+  require "#{File.dirname(__FILE__)}/AlphaWriter"
   BoardGames::GameOfLife::GUI.new.run!
 end
