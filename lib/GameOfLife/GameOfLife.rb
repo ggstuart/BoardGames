@@ -37,6 +37,9 @@ module BoardGames
       def wake!
         @alive = true
       end
+      def kill!
+        @alive = false
+      end
       def toggle!
         @alive = !@alive
       end
@@ -59,6 +62,10 @@ module BoardGames
         @count = 0
       end
 
+      def killAll
+        @data.each {|cell| cell.kill! }
+      end
+
       def randomise(chance = 5)
         @data.each{|sq| sq.randomise(chance)}
       end
@@ -71,6 +78,10 @@ module BoardGames
         @data.each { |sq| sq.prepare }  #prepare based on current neighbours
         @data.each { |sq| sq.execute }  #once its all done, change the state
         @count += 1                     #keep tabs of how many iterations have been done
+      end
+
+      def each
+        @data.each { |cell| yield cell }
       end
 
       def to_s
