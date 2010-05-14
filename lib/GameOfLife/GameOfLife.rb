@@ -1,31 +1,6 @@
 module BoardGames
   module GameOfLife
 
-    module Rules
-      #the fate of an entity
-      #a live square will die if its lonely or overcrowded
-      #a dead square will wake if its fertile
-      def fate
-        #REQUIREMENT
-        #must define friends method
-        n = friends
-        @alive ? (overcrowded?(n) || lonely?(n)) : fertile?(n)
-      end
-      private
-      #lonely squares have too few friends
-      def lonely?(n)
-        n < 2
-      end    
-      #overcrowded squares have too many friends
-      def overcrowded?(n)
-        n > 3
-      end
-      #fertile squares are surrounded by exactly three friends  
-      def fertile?(n)
-        n == 3
-      end
-    end
-
     #This just provides some simple functionality, not sure why its separated really
     #but it all seems to fit together and keeps the cell code clean
     module State
@@ -51,6 +26,21 @@ module BoardGames
       end
     end
 
+
+    #defines the method 'fate' which determines (oddly) whether the @alive variable should be toggled
+    #REQUIREMENTS
+    #must maintain a boolean variable '@alive' (e.g. use in conjunction with State module)
+    #must define 'friends' method to return number of neighbouring entities which are live (e.g. use with BoardGames::Boardable module)
+    module Rules    
+      LONELY = 1      #lonely or less kills
+      OVERCROWDED = 4 #overcrowded or more kills
+      FERTILE = [3]     #fertile generates new life
+#      FERTILE = [6,3]     #this one is quite good too
+      def fate
+        n = friends
+        @alive ? ( n >= OVERCROWDED ||  n <= LONELY) : FERTILE.include?(n)
+      end
+    end
 
     #The GameOfLife::Board defines it own cells like a good BoardGames::Base::Board
     class Board < Base::Board
@@ -105,7 +95,10 @@ module BoardGames
         include Rules           #provides 'fate'
         include State           #provides 'toggle!'
 
+        attr :age
+        
         def initialize(board, alive = false)
+          @age = 0
           @alive = alive
           @board = board
           @prepared = false
@@ -131,6 +124,8 @@ module BoardGames
             #the toggle! method comes from the State module along with a few other handy bits
             toggle!
           end
+          @age +=1 if @alive
+          @age = 0 if !@alive
           @friends = nil
           @prepared = false
         end
@@ -147,11 +142,23 @@ module BoardGames
       attr :width
       attr :height
       attr :board
-      def initialize(width = 100, height = 60, chance = 10)
+      def initialize(width = 60, height = 40, chance = rand(11)+1)
         @width = width
         @height = height
         @chance = chance
         refresh
+      end
+
+      def each
+        @board.each {|cell| yield cell }
+      end
+
+      def [](x, y)
+        @board[x, y]
+      end
+
+      def randomCell
+        @board.randomCell
       end
 
       def size
@@ -169,14 +176,16 @@ module BoardGames
         refresh
       end
 
-      def randomise(chance)
-        @chance = chance
+      def randomise()
         @board.randomise(@chance)
+      end
+
+      def clear
+        @board.killAll
       end
 
       def refresh
         @board = Board.new(@width, @height)
-        @board.randomise(@chance)
       end
 
       def iterate!
@@ -194,6 +203,23 @@ module BoardGames
         @board.to_s
       end
     end #class Session
+
+    #figure out which way you're pointing
+    module Orientation
+      N = 0
+      NE = 1
+      E = 2
+      SE = 3
+      S = 4
+      SW = 5
+      W = 6
+      NW = 7
+      Diagonals = [NW, SW, NE, SE]
+      Majors = [N, S, E, W]
+      All = [N, NE, E, SE, S, SW, W, NW]
+      class InvalidOrientation < ArgumentError
+      end
+    end
     
   end #module  GameOfLife
 end #module BoardGames
