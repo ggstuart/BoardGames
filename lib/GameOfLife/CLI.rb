@@ -6,7 +6,7 @@ module BoardGames
       end
     
       def initialize
-        @session = Session.new()
+        @session = Session.new(30,20)
         @name = "Graeme's \"Conway's Game of life\""
         @cursor = 'GOL>>'
         @active = true
@@ -39,7 +39,7 @@ module BoardGames
         when /^r$/i
           getSeed
         when /^r\d{1}$/i
-          @session.chance = 11 - input.split(/r/i)[1].to_i
+          @session.randomise(11 - input.split(/r/i)[1].to_i)
         when /^i$/i
           getIterate
           iterate
@@ -71,7 +71,7 @@ module BoardGames
         while true
           input = getInput("Seed [0-9]", '0')
           if input =~ /\d{1}/
-            @session.chance = 11 - input.to_i
+            @session.randomise(11 - input.to_i)
             break
           end
         end
