@@ -51,6 +51,10 @@ module BoardGames
         @data[(y % @y)*@x+(x % @x)]
       end
 
+      def randomCell
+        self[rand(@x), rand(@y)]
+      end
+
       def coordinates(cell)
         i = @data.index(cell)
         raise  CantFindCell, 'The cell you are looking for is not in this arena.' if i.nil?
@@ -61,12 +65,12 @@ module BoardGames
 
       def up(cell)
         x, y = cell.coordinates
-        self[x,y-1]
+        self[x,y+1]
       end
 
       def down(cell)
         x, y = cell.coordinates
-        self[x,y+1]
+        self[x,y-1]
       end
 
       def left(cell)
